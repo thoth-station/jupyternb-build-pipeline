@@ -1,0 +1,34 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: jupyternb-builds-listener
+  labels:
+    app: jupyternb-builds
+spec:
+  serviceAccountName: jupyternb-webhook
+  triggers:
+    - name: github-jupyternb-builds
+      interceptors:
+        - github:
+            secretRef:
+              secretName: webhook-secret
+              secretKey: webhooksecret
+            eventTypes:
+              - create
+      bindings:
+        - name: github-binding
+      template:
+        name: git-template
+
+    - name: gitlab-jupyternb-builds
+      interceptors:
+        - gitlab:
+            secretRef:
+              secretName: webhook-secret
+              secretKey: webhooksecret
+            eventTypes:
+              - Tag Push Hook
+      bindings:
+        - name: gitlab-binding
+      template:
+        name: git-template

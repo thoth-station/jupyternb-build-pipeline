@@ -1,0 +1,42 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: s2i-custom-notebook
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/AICoE/s2i-custom-notebook.git
+    - name: revision
+      value: master
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: thoth-s2i
+spec:
+  type: image
+  params:
+    - name: url
+      value: quay.io/thoth-station/s2i-minimal-notebook:master
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: ubi8-minimal
+spec:
+  type: image
+  params:
+    - name: url
+      value: registry.access.redhat.com/ubi8/ubi-minimal:latest
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: ubi8
+spec:
+  type: image
+  params:
+    - name: url
+      value: registry.access.redhat.com/ubi8/ubi:latest

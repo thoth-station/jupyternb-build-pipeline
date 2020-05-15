@@ -1,0 +1,48 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: jupyternb-pipeline
+  labels:
+    app: jupyternb
+spec:
+  params:
+    - name: git_ref
+      type: string
+    - name: git_ref_type
+      type: string
+    - name: repo
+      type: string
+    - name: repo_full_name
+      type: string
+    - name: pipelinerun_name
+      type: string
+  resources:
+    - name: git-repo
+      type: git
+    - name: s2i-custom-notebook
+      type: git
+    - name: s2i-thoth
+      type: image
+    - name: ubi
+      type: image
+
+  tasks:
+    - name: jupyternb-build-release-run
+      taskRef:
+        name: jupyternb-build-release
+      params:
+        - name: git_ref
+          value: $(params.git_ref)
+        - name: git_ref_type
+          value: $(params.git_ref_type)
+        - name: repo
+          value: $(params.repo)
+      resources:
+        inputs:
+          - name: s2i-thoth
+            resource: s2i-thoth
+          - name: repo
+            resource: git-repo
+          - name: s2i-custom-notebook
+            resource: s2i-custom-notebook

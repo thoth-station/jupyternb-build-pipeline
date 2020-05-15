@@ -1,0 +1,159 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jupyternb-build-release
+spec:
+  params:
+    # buildah params
+    - name: PATH_CONTEXT
+      default: .
+      description: The location of the path to run s2i from.
+    - name: TLSVERIFY
+      default: "false"
+      description:
+        Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+        registry)
+    - name: LOGLEVEL
+      description: Log level when running the S2I binary
+      default: "0"
+
+    # s2i thoth params
+    - name: UPGRADE_PIP_TO_LATEST
+      description: Set this variable to have the 'pip' program and related python packages be upgraded.
+      default: '1'
+    - name: WEB_CONCURRENCY
+      description: Set this to change the default setting for the number of workers.
+      default: '1'
+    - name: THOTH_ADVISE
+      description: Advise the recommended stack by Thoth.
+      default: "0"
+    - name: THOTH_ERROR_FALLBACK
+      description: Fallback to the lock file present in the repository if the submitted Thoth analysis fails.
+      default: "1"
+    - name: THOTH_DRY_RUN
+      description: Submit stack to Thoth, but do not use the recommended one.
+      default: "1"
+    - name: "THAMOS_DEBUG"
+      description: "Thamos enable debug mode."
+      default: "0"
+    - name: "THAMOS_VERBOSE"
+      description: Run thamos in verbose mode.
+      default: "1"
+    - name: THOTH_PROVENANCE_CHECK
+      description: Provenance check is verify the stack.
+      default: "0"
+    - name: THAMOS_NO_PROGRESSBAR
+      description: Disable progressbar for thamos.
+      default: "1"
+
+    # pull request params
+    - name: git_ref
+      description: Git reference value.
+    - name: git_ref_type
+      description: Type of ref Tag or Branch.
+    - name: repo
+      description: Git repository.
+  resources:
+    inputs:
+      - name: s2i-thoth
+        type: image
+      - name: repo
+        type: git
+      - name: s2i-custom-notebook
+        type: git
+  steps:
+    - name: generate
+      image: quay.io/openshift-pipeline/s2i:nightly
+      workingDir: /workspace/repo
+      securityContext:
+        privileged: true
+      script: |
+        cp -r /workspace/s2i-custom-notebook/.s2i /workspace/repo/.s2i
+
+        /usr/local/bin/s2i build \
+        $(params.PATH_CONTEXT) \
+        $(resources.inputs.s2i-thoth.url) \
+        --env UPGRADE_PIP_TO_LATEST=$(params.UPGRADE_PIP_TO_LATEST) \
+        --env WEB_CONCURRENCY=$(params.WEB_CONCURRENCY) \
+        --env THOTH_ADVISE=$(params.THOTH_ADVISE) \
+        --env THOTH_ERROR_FALLBACK=$(params.THOTH_ERROR_FALLBACK) \
+        --env THOTH_DRY_RUN=$(params.THOTH_DRY_RUN) \
+        --env THAMOS_DEBUG=$(params.THAMOS_DEBUG) \
+        --env THAMOS_VERBOSE=$(params.THAMOS_VERBOSE) \
+        --env THOTH_PROVENANCE_CHECK=$(params.THOTH_PROVENANCE_CHECK) \
+        --env GIT_SSL_NO_VERIFY=true \
+        --loglevel=$(params.LOGLEVEL) \
+        --as-dockerfile /gen-source/Dockerfile
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: build
+      image: quay.io/buildah/stable
+      workingDir: /gen-source
+      securityContext:
+        privileged: true
+      command:
+        - buildah
+        - bud
+        - --tls-verify=$(params.TLSVERIFY)
+        - --layers
+        - -f
+        - /gen-source/Dockerfile
+        - -t
+        - $(params.repo)
+        - .
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: push
+      image: quay.io/buildah/stable
+      securityContext:
+        privileged: true
+      command:
+        - buildah
+        - push
+        - --authfile=/pushsecret/.dockerconfigjson
+        - --tls-verify=$(params.TLSVERIFY)
+        - $(params.repo)
+        - docker://docker-registry.upshift.redhat.com/aicoe-notebooks/$(params.repo):latest
+      volumeMounts:
+        - name: varlibcontainers
+          mountPath: /var/lib/containers
+        - name: upshift-registry-creds
+          mountPath: /pushsecret/
+          readOnly: true
+
+    - name: push-tag
+      image: quay.io/buildah/stable
+      securityContext:
+        privileged: true
+      script: |
+        if [ "$(params.git_ref_type)" == "tag_push" -o "$(params.git_ref_type)" == "push" ]; then
+          tag=$(echo "$(params.git_ref)" | awk -F '/' '{print $3}')
+        else
+          tag=$(params.git_ref)
+        fi
+        buildah push \
+        --authfile=/pushsecret/.dockerconfigjson \
+        --tls-verify=$(params.TLSVERIFY) \
+        $(params.repo) \
+        docker://docker-registry.upshift.redhat.com/aicoe-notebooks/$(params.repo):$tag
+      volumeMounts:
+        - name: varlibcontainers
+          mountPath: /var/lib/containers
+        - name: upshift-registry-creds
+          mountPath: /pushsecret/
+          readOnly: true
+
+  volumes:
+    - name: varlibcontainers
+      emptyDir: {}
+    - name: gen-source
+      emptyDir: {}
+    - name: upshift-registry-creds
+      secret:
+        secretName: upshift-registry  # Name of the secret to be parameterized

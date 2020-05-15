@@ -1,0 +1,18 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: gitlab-binding
+  labels:
+    app: jupyternb
+spec:
+  params:
+  - name: git_ref
+    value: $(body.ref)
+  - name: git_ref_type
+    value: $(body.object_kind)
+  - name: repo
+    value: $(body.project.name)
+  - name: repo_full_name
+    value: $(body.project.path_with_namespace)
+  - name: repo_url
+    value: $(body.project.ssh_url)
