@@ -16,3 +16,11 @@ spec:
     value: $(body.project.path_with_namespace)
   - name: repo_url
     value: $(body.project.ssh_url)
+  - name: git_tag_commit_sha
+    value: $(body.checkout_sha)
+  - name: git_tag_author
+    value: $(body.user_name)
+  - name: git_http_url
+    value: $(body.project.git_http_url)
+  - name: git_repo_desc
+    value: $(body.project.description)

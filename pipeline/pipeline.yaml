@@ -17,6 +17,14 @@ spec:
       type: string
     - name: pipelinerun_name
       type: string
+    - name: git_tag_commit_sha
+      type: string
+    - name: git_repo_desc
+      type: string
+    - name: git_http_url
+      type: string
+    - name: git_tag_author
+      type: string
   resources:
     - name: git-repo
       type: git
@@ -38,6 +46,14 @@ spec:
           value: $(params.git_ref_type)
         - name: repo
           value: $(params.repo)
+        - name: git_tag_commit_sha
+          value: $(params.git_tag_commit_sha)
+        - name: git_repo_desc
+          value: $(params.git_repo_desc)
+        - name: git_http_url
+          value: $(params.git_http_url)
+        - name: git_tag_author
+          value: $(params.git_tag_author)
       resources:
         inputs:
           - name: s2i-thoth

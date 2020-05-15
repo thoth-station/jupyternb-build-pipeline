@@ -53,6 +53,14 @@ spec:
       description: Type of ref Tag or Branch.
     - name: repo
       description: Git repository.
+    - name: git_tag_commit_sha
+      description: The git tag commit sha.
+    - name: git_repo_desc
+      description: The git repository desc.
+    - name: git_http_url
+      description: The git repository https url.
+    - name: git_tag_author
+      description: The git tag author.
   resources:
     inputs:
       - name: s2i-thoth
@@ -82,6 +90,12 @@ spec:
         --env THAMOS_VERBOSE=$(params.THAMOS_VERBOSE) \
         --env THOTH_PROVENANCE_CHECK=$(params.THOTH_PROVENANCE_CHECK) \
         --env GIT_SSL_NO_VERIFY=true \
+        --env GIT_REPO_NAME="$(params.repo)" \
+        --env GIT_TAG="$(params.git_ref)" \
+        --env GIT_TAG_AUTHOR="$(params.git_tag_author)" \
+        --env GIT_TAG_COMMIT_SHA="$(params.git_tag_commit_sha)" \
+        --env GIT_REPO_URL="$(params.git_http_url)" \
+        --env GIT_REPO_DESC="$(params.git_repo_desc)" \
         --loglevel=$(params.LOGLEVEL) \
         --as-dockerfile /gen-source/Dockerfile
       volumeMounts:

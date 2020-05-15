@@ -15,17 +15,26 @@ spec:
     - name: repo_full_name
       description: The git repository full name.
     - name: repo_url
-      description: The git repository url
+      description: The git repository url.
     - name: pipelinerun_name
       description: pipelinerun associated.
+    - name: git_tag_commit_sha
+      description: The git tag commit sha.
+    - name: git_repo_desc
+      description: The git repository desc.
+      default: ""
+    - name: git_http_url
+      description: The git repository https url.
+    - name: git_tag_author
+      description: The git tag author.
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: pipelinerun-jupyternb-$(params.repo)-$(uid)
+        name: $(params.repo)-build-$(uid)
         labels:
           app: jupyternb
-          component: pipelinerun-jupyternb-$(params.repo)
+          component: $(params.repo)-build
       spec:
         serviceAccountName: jupyternb
         pipelineRef:
@@ -39,8 +48,16 @@ spec:
             value: $(params.repo)
           - name: repo_full_name
             value: $(params.repo_full_name)
+          - name: git_tag_commit_sha
+            value: $(params.git_tag_commit_sha)
+          - name: git_repo_desc
+            value: $(params.git_repo_desc)
+          - name: git_http_url
+            value: $(params.git_http_url)
+          - name: git_tag_author
+            value: $(params.git_tag_author)
           - name: pipelinerun_name
-            value: pipelinerun-jupyternb-$(params.repo)-$(uid)
+            value: $(params.repo)-build-$(uid)
         resources:
           - name: git-repo
             resourceSpec:
