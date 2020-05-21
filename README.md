@@ -17,7 +17,8 @@ We have a template repo which you can use to structure your repo.
 
 On the GitLab/GitHub repo include the following webhook and also include sesheta as a collaborator.
 
-Webhook: <http://thoth-ci.thoth.ultrahook.com> webhook password: `*******`(contact thoth-station)
+Webhook: <http://thoth-ci.thoth.ultrahook.com><br>
+Webhook Secret: `*******`(contact thoth-station)
 
 Gitlab private/personal repository requirement: Add @sesheta as a collaborator in the project.
 
@@ -28,7 +29,8 @@ On each Tag release, it will trigger a new build and push the updated image to t
 
 **Note**: The name of the repository is to be lowercase.
 
-The pipeline uses an s2i-minimal-notebook(Python3.6) image as the base image for s2i build. On image build, it pushes the tag to image-registry and also updates the latest tag for the image on the registry.
+The pipeline uses an s2i-minimal-notebook(Python3.6) image as the base image for s2i build.<br>
+On image build, it pushes the tag to image-registry and also updates the latest tag for the image on the registry.
 
 ## How to contribute
 
@@ -50,7 +52,7 @@ We welcome contributions, The following components can be worked on:
 ## Want to step up an instance
 
 - Setup Tekton Pipeline and Tekton Trigger in cluster.
-
+- Deploy the Triggers, Pipeline, Tasks.
 - If behind the VPN, one time setup components:
 
   - Ultrahook: ultrahook passes the public internet request to services behind VPN
