@@ -19,7 +19,7 @@ spec:
   type: image
   params:
     - name: url
-      value: quay.io/thoth-station/s2i-minimal-notebook:master
+      value: quay.io/thoth-station/s2i-custom-notebook:master
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource

@@ -76,8 +76,6 @@ spec:
       securityContext:
         privileged: true
       script: |
-        cp -r /workspace/s2i-custom-notebook/.s2i /workspace/repo/.s2i
-
         /usr/local/bin/s2i build \
         $(params.PATH_CONTEXT) \
         $(resources.inputs.s2i-thoth.url) \
