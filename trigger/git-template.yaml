@@ -31,10 +31,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: $(params.repo)-build-$(uid)
+        name: jupyternb-pipeline-build-$(uid)
         labels:
           app: jupyternb
-          component: $(params.repo)-build
+          component: $(params.repo)
       spec:
         serviceAccountName: jupyternb
         pipelineRef:
