@@ -96,6 +96,7 @@ spec:
         --env GIT_REPO_DESC="$(params.git_repo_desc)" \
         --environment-file .env \
         --loglevel=$(params.LOGLEVEL) \
+        --scripts-url="image:///opt/app-root/builder" \
         --as-dockerfile /gen-source/Dockerfile
       volumeMounts:
         - mountPath: /gen-source
