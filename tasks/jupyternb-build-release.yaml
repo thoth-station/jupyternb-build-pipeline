@@ -94,7 +94,6 @@ spec:
         --env GIT_TAG_COMMIT_SHA="$(params.git_tag_commit_sha)" \
         --env GIT_REPO_URL="$(params.git_http_url)" \
         --env GIT_REPO_DESC="$(params.git_repo_desc)" \
-        --environment-file .env \
         --loglevel=$(params.LOGLEVEL) \
         --scripts-url="image:///opt/app-root/builder" \
         --as-dockerfile /gen-source/Dockerfile
