@@ -20,6 +20,7 @@ spec:
       description: pipelinerun associated.
     - name: git_tag_commit_sha
       description: The git tag commit sha.
+      default: ""
     - name: git_repo_desc
       description: The git repository desc.
       default: ""
