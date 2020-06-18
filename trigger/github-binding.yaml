@@ -15,7 +15,7 @@ spec:
   - name: repo_full_name
     value: $(body.repository.full_name)
   - name: repo_url
-    value: $(body.repository.html_url)
+    value: $(body.repository.ssh_url)
   - name: git_tag_author
     value: $(body.sender.login)
   - name: git_http_url
