@@ -65,7 +65,7 @@ spec:
               type: git
               params:
                 - name: revision
-                  value: master
+                  value: $(params.git_ref)
                 - name: url
                   value: $(params.repo_url)
           - name: s2i-custom-notebook
