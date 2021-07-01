@@ -25,5 +25,13 @@ spec:
             build-stratergy: "Source"
         EOF
         fi
-        echo -n $(yq r .aicoe-ci.yaml build.base-image) > $(results.base-image.path)
-        echo -n $(yq r .aicoe-ci.yaml build.build-stratergy) > $(results.build-stratergy.path)
+        if [ -z "$(yq r .aicoe-ci.yaml build.base-image)" ]; then
+          echo -n "quay.io/thoth-station/s2i-custom-notebook:latest" > $(results.base-image.path)
+        else
+          echo -n $(yq r .aicoe-ci.yaml build.base-image) > $(results.base-image.path)
+        fi
+        if [ -z "$(yq r .aicoe-ci.yaml build.build-stratergy)" ]; then
+          echo -n "Source" > $(results.build-stratergy.path)
+        else
+          echo -n $(yq r .aicoe-ci.yaml build.build-stratergy) > $(results.build-stratergy.path)
+        fi
