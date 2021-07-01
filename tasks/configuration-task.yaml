@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: configuration
+  labels:
+    app: aicoe-ci
+spec:
+  resources:
+    inputs:
+      - name: repo
+        type: git
+  results:
+    - name: base-image
+    - name: build-stratergy
+  steps:
+    - name: gather-info
+      image: quay.io/harshad16/yq:latest
+      workingDir: /workspace/repo
+      script: |
+        if [[ ! -f .aicoe-ci.yaml ]]; then
+          cat <<EOF > .aicoe-ci.yaml
+          check: []
+          build:
+            base-image: "quay.io/thoth-station/s2i-custom-notebook:latest"
+            build-stratergy: "Source"
+        EOF
+        fi
+        echo -n $(yq r .aicoe-ci.yaml build.base-image) > $(results.base-image.path)
+        echo -n $(yq r .aicoe-ci.yaml build.build-stratergy) > $(results.build-stratergy.path)

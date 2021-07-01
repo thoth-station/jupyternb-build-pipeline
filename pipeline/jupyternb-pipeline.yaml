@@ -28,14 +28,20 @@ spec:
   resources:
     - name: git-repo
       type: git
-    - name: s2i-custom-notebook
-      type: git
     - name: s2i-thoth
       type: image
     - name: ubi
       type: image
 
   tasks:
+    - name: configuration
+      taskRef:
+        name: configuration
+      resources:
+        inputs:
+          - name: repo
+            resource: git-repo
+
     - name: jupyternb-build-release-run
       taskRef:
         name: jupyternb-build-release
@@ -54,11 +60,11 @@ spec:
           value: $(params.git_http_url)
         - name: git_tag_author
           value: $(params.git_tag_author)
+        - name: base_image
+          value: $(tasks.configuration.results.base-image)
       resources:
         inputs:
           - name: s2i-thoth
             resource: s2i-thoth
           - name: repo
             resource: git-repo
-          - name: s2i-custom-notebook
-            resource: s2i-custom-notebook
