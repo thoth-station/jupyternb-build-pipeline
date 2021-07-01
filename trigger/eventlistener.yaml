@@ -16,9 +16,9 @@ spec:
             eventTypes:
               - create
       bindings:
-        - name: github-binding
+        - ref: github-binding
       template:
-        name: git-template
+        ref: git-template
 
     - name: gitlab-jupyternb-builds
       interceptors:
@@ -29,6 +29,6 @@ spec:
             eventTypes:
               - Tag Push Hook
       bindings:
-        - name: gitlab-binding
+        - ref: gitlab-binding
       template:
-        name: git-template
+        ref: git-template

@@ -35,42 +35,39 @@ spec:
         name: jupyternb-pipeline-build-$(uid)
         labels:
           app: jupyternb
-          component: $(params.repo)
+          component: $(tt.params.repo)
       spec:
         serviceAccountName: jupyternb
         pipelineRef:
           name: jupyternb-pipeline
         params:
           - name: git_ref
-            value: $(params.git_ref)
+            value: $(tt.params.git_ref)
           - name: git_ref_type
-            value: $(params.git_ref_type)
+            value: $(tt.params.git_ref_type)
           - name: repo
-            value: $(params.repo)
+            value: $(tt.params.repo)
           - name: repo_full_name
-            value: $(params.repo_full_name)
+            value: $(tt.params.repo_full_name)
           - name: git_tag_commit_sha
-            value: $(params.git_tag_commit_sha)
+            value: $(tt.params.git_tag_commit_sha)
           - name: git_repo_desc
-            value: $(params.git_repo_desc)
+            value: $(tt.params.git_repo_desc)
           - name: git_http_url
-            value: $(params.git_http_url)
+            value: $(tt.params.git_http_url)
           - name: git_tag_author
-            value: $(params.git_tag_author)
+            value: $(tt.params.git_tag_author)
           - name: pipelinerun_name
-            value: $(params.repo)-build-$(uid)
+            value: $(tt.params.repo)-build-$(uid)
         resources:
           - name: git-repo
             resourceSpec:
               type: git
               params:
                 - name: revision
-                  value: $(params.git_ref)
+                  value: $(tt.params.git_ref)
                 - name: url
-                  value: $(params.repo_url)
-          - name: s2i-custom-notebook
-            resourceRef:
-              name: s2i-custom-notebook
+                  value: $(tt.params.repo_url)
           - name: s2i-thoth
             resourceRef:
               name: thoth-s2i
