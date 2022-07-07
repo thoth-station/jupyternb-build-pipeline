@@ -1,0 +1,12 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+approvers:
+  - goern
+  - harshad16
+
+reviewers:
+  - harshad16
+  - Gregory-Pereira
+
+labels:
+  - sig/devsecops
